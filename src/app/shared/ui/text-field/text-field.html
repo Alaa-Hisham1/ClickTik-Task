@@ -1,0 +1,20 @@
+<div class="text-field">
+  <label class="text-field__label" [for]="id">{{ label() }}</label>
+  <input
+    class="text-field__input"
+    [class.text-field__input--error]="!!error()"
+    [id]="id"
+    [type]="type()"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    [required]="required()"
+    [attr.autocomplete]="autocomplete()"
+    [attr.aria-invalid]="error() ? true : null"
+    [attr.aria-describedby]="error() ? errorId : null"
+    [value]="value()"
+    (input)="onInput($event)"
+  />
+  @if (error()) {
+    <p class="text-field__error" [id]="errorId" role="alert">{{ error() }}</p>
+  }
+</div>

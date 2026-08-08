@@ -1,0 +1,46 @@
+<div class="login-page">
+  <div class="login-page__content">
+    <div class="login-page__header">
+      <app-logo size="md" />
+      <div class="login-page__intro">
+        <h1 class="login-page__title">Log in to your account</h1>
+        <p class="login-page__subtitle">Welcome back! Please enter your details.</p>
+      </div>
+    </div>
+
+    <form class="login-page__form" (submit)="onSubmit($event)">
+      @if (error()) {
+        <p class="login-page__error" role="alert">{{ error() }}</p>
+      }
+
+      <app-text-field
+        label="Email"
+        type="text"
+        placeholder="Enter your email"
+        autocomplete="username"
+        [required]="true"
+        [disabled]="loading()"
+        [(value)]="username"
+      />
+      <app-text-field
+        label="Password"
+        type="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+        [required]="true"
+        [disabled]="loading()"
+        [(value)]="password"
+      />
+      <app-button
+        type="submit"
+        variant="primary"
+        size="lg"
+        [fullWidth]="true"
+        [loading]="loading()"
+        [disabled]="loading()"
+      >
+        Sign In
+      </app-button>
+    </form>
+  </div>
+</div>

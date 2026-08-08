@@ -1,0 +1,9 @@
+// Flex column shell so a routed page can grow to fill the space between
+// header and footer regardless of viewport height (see login.scss :host).
+// padding-top compensates for the header being position:fixed (out of flow).
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: var(--header-height);
+}

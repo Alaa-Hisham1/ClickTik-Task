@@ -1,0 +1,36 @@
+.logo-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--space-2-5);
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+
+  &--md {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--space-3-5);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.logo-mark__blob {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  top: 18%;
+  left: 15%;
+  border-radius: var(--radius-full);
+  filter: blur(2px);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--color-primary-500) 45%, white) 0%,
+    var(--color-primary-500) 55%,
+    var(--color-primary-700) 100%
+  );
+}

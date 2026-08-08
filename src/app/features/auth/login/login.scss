@@ -1,0 +1,73 @@
+// Fills the remaining height inside app.html's flex column shell
+// (header + this + footer), so the card sits at a fixed offset from the
+// header (padding-top) rather than being vertically centered.
+:host {
+  flex: 1;
+  display: flex;
+}
+
+.login-page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-24) var(--space-8) var(--space-12) var(--space-8);
+  background: var(--color-white);
+}
+
+.login-page__content {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.login-page__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.login-page__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.login-page__title {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-display-sm);
+  line-height: var(--line-height-display-sm);
+  color: var(--color-gray-900);
+}
+
+.login-page__subtitle {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-md);
+  color: var(--color-gray-600);
+}
+
+.login-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.login-page__error {
+  margin: 0;
+  padding: var(--space-3) var(--space-3-5);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-error-500);
+  background: color-mix(in srgb, var(--color-error-500) 8%, transparent);
+  color: var(--color-error-600);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
+}

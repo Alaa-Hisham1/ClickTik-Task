@@ -1,0 +1,43 @@
+// Height/copy mirror the header for visual balance — no explicit footer spec was
+// provided from Figma, so this is an approximation pending exact values.
+.site-footer {
+  width: 100%;
+  height: var(--footer-height);
+  background: var(--color-gray-900);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.site-footer__container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding-inline: var(--space-8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-footer__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  text-decoration: none;
+}
+
+.site-footer__logo-text {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: 18px;
+  line-height: 32px;
+  color: var(--color-white);
+}
+
+.site-footer__copyright {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
+  color: var(--color-gray-300);
+}
