@@ -28,7 +28,7 @@ export class Login {
     // router, so effect() is the right tool for reacting to auth state here.
     effect(() => {
       if (this.authStore.isAuthenticated()) {
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/products';
         this.router.navigateByUrl(returnUrl);
       }
     });
