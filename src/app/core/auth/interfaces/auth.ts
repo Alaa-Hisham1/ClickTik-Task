@@ -24,3 +24,12 @@ export interface RefreshResponse {
   accessToken: string;
   refreshToken: string;
 }
+
+// used in auth.store.ts
+export interface AuthState {
+  user: AuthUser | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  status: 'idle' | 'loading' | 'error';
+  error: string | null;
+}

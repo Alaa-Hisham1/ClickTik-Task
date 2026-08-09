@@ -13,15 +13,9 @@ import { EMPTY, Observable, catchError, map, of, pipe, switchMap, tap } from 'rx
 
 import { AuthStorage } from './auth-storage';
 import { AuthService } from './auth.service';
-import { AuthSession, AuthUser, LoginRequest } from './interfaces/auth';
+import { AuthSession, AuthState, AuthUser, LoginRequest } from './interfaces/auth';
 
-interface AuthState {
-  user: AuthUser | null;
-  accessToken: string | null;
-  refreshToken: string | null;
-  status: 'idle' | 'loading' | 'error';
-  error: string | null;
-}
+
 
 const initialState: AuthState = {
   user: null,
