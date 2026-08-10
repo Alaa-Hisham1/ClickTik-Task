@@ -6,6 +6,7 @@ import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { LoadingSkeleton } from '../../../shared/ui/loading-skeleton/loading-skeleton';
 import { Pagination } from '../../../shared/ui/pagination/pagination';
 import { ProductCard } from '../../../shared/ui/product-card/product-card';
+import { CartStore } from '../../cart/cart.store';
 import { Product } from '../interfaces/product';
 import { ProductsStore } from '../products.store';
 
@@ -25,6 +26,7 @@ export class ProductPage {
   readonly search = input<string | null>(null);
 
   protected readonly productsStore = inject(ProductsStore);
+  protected readonly cartStore = inject(CartStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -77,9 +79,7 @@ export class ProductPage {
   }
 
   protected onAddToCart(product: Product): void {
-    // No Cart feature/API wired up yet — the button is real and reachable,
-    // it just has nothing to call yet.
-    void product;
+    this.cartStore.addToCart(product.id);
   }
 
   private navigate(queryParams: Record<string, string | number | null>): void {

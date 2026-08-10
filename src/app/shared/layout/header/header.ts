@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { AuthStore } from '../../../core/auth/auth.store';
+import { CartStore } from '../../../features/cart/cart.store';
 import { Button } from '../../ui/button/button';
 import { CartBadge } from '../../ui/cart-badge/cart-badge';
 import { Logo } from '../../ui/logo/logo';
@@ -21,6 +22,7 @@ export class Header {
   // Layout components may read app-wide state directly (unlike shared/ui
   // atoms) — this is what decides "Log In" vs. search+cart below.
   protected readonly authStore = inject(AuthStore);
+  protected readonly cartStore = inject(CartStore);
 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);

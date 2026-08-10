@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 
+import { AuthUser } from './interfaces/auth';
+
 const ACCESS_TOKEN_KEY = 'clicktik.auth.accessToken';
 const REFRESH_TOKEN_KEY = 'clicktik.auth.refreshToken';
+const USER_KEY = 'clicktik.auth.user';
 
 // Single place that touches Web Storage for auth. We use our own tokens via
 // the Authorization header (see auth-interceptor.ts), not the cookies
@@ -30,9 +33,29 @@ export class AuthStorage {
     localStorage.setItem(REFRESH_TOKEN_KEY, token);
   }
 
+  // Persisted alongside the tokens so a page reload can rehydrate more than
+  // just "is there a valid token" — CartStore, for one, needs the user's id
+  // and would otherwise silently have nothing to send until the next login.
+  getUser(): AuthUser | null {
+    const raw = localStorage.getItem(USER_KEY);
+    if (!raw) {
+      return null;
+    }
+    try {
+      return JSON.parse(raw) as AuthUser;
+    } catch {
+      return null;
+    }
+  }
+
+  setUser(user: AuthUser): void {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  }
+
   clearSession(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
   }
 
   hasSession(): boolean {

@@ -13,9 +13,15 @@ import { EMPTY, Observable, catchError, map, of, pipe, switchMap, tap } from 'rx
 
 import { AuthStorage } from './auth-storage';
 import { AuthService } from './auth.service';
-import { AuthSession, AuthState, AuthUser, LoginRequest } from './interfaces/auth';
+import { AuthSession, AuthUser, LoginRequest } from './interfaces/auth';
 
-
+interface AuthState {
+  user: AuthUser | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  status: 'idle' | 'loading' | 'error';
+  error: string | null;
+}
 
 const initialState: AuthState = {
   user: null,
@@ -46,6 +52,7 @@ export const AuthStore = signalStore(
                 const { accessToken, refreshToken, ...user } = session;
                 authStorage.setAccessToken(accessToken);
                 authStorage.setRefreshToken(refreshToken);
+                authStorage.setUser(user);
                 patchState(store, {
                   user,
                   accessToken,
@@ -103,7 +110,7 @@ export const AuthStore = signalStore(
       const accessToken = authStorage.getAccessToken();
       const refreshToken = authStorage.getRefreshToken();
       if (accessToken && refreshToken) {
-        patchState(store, { accessToken, refreshToken });
+        patchState(store, { accessToken, refreshToken, user: authStorage.getUser() });
       }
     },
   }),

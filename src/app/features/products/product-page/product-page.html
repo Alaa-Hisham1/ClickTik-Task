@@ -16,6 +16,10 @@
     </ol>
   </nav>
 
+  @if (cartStore.error(); as cartError) {
+    <p class="product-page__cart-error" role="alert">{{ cartError }}</p>
+  }
+
   <div class="product-page__layout">
     <aside class="product-page__sidebar" aria-labelledby="category-filter-heading">
       <h2 id="category-filter-heading" class="product-page__sidebar-title">Products</h2>

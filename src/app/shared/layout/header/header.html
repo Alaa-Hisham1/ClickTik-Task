@@ -28,8 +28,7 @@
           />
         </form>
 
-        <!-- Count is a placeholder until the Cart feature/API is wired up. -->
-        <app-cart-badge [count]="0" />
+        <app-cart-badge [count]="cartStore.count()" />
       } @else {
         <app-button variant="tertiary-gray" size="lg">Log In</app-button>
       }
