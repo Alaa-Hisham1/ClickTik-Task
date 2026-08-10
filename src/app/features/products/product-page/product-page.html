@@ -90,31 +90,46 @@
           <app-button variant="secondary" size="md" (clicked)="retry()">Try again</app-button>
         </app-empty-state>
       } @else if (productsStore.products().length > 0) {
-        <div class="product-page__grid">
-          @for (product of productsStore.products(); track product.id) {
-            <app-product-card
-              [image]="product.thumbnail"
-              [title]="product.title"
-              [description]="product.description"
-              badge="New"
-              [price]="product.price"
-              [originalPrice]="originalPrice(product)"
-              [brand]="product.brand ?? ''"
-              [category]="product.category"
-              [inStock]="product.stock > 0"
-              [rating]="product.rating"
-              [reviewCount]="product.reviews.length"
-              (addToCart)="onAddToCart(product)"
-            />
-          }
-        </div>
+        <!--
+          The data is already loaded by this point — @defer here isn't
+          waiting on the network, it's deferring the ProductCard/Pagination
+          *chunk* and their render cost until the grid is actually about to
+          be seen, so rows below the fold don't pay for cards nobody has
+          scrolled to yet.
+        -->
+        @defer (on viewport) {
+          <div class="product-page__grid">
+            @for (product of productsStore.products(); track product.id) {
+              <app-product-card
+                [image]="product.thumbnail"
+                [title]="product.title"
+                [description]="product.description"
+                badge="New"
+                [price]="product.price"
+                [originalPrice]="originalPrice(product)"
+                [brand]="product.brand ?? ''"
+                [category]="product.category"
+                [inStock]="product.stock > 0"
+                [rating]="product.rating"
+                [reviewCount]="product.reviews.length"
+                (addToCart)="onAddToCart(product)"
+              />
+            }
+          </div>
 
-        <app-pagination
-          class="product-page__pagination"
-          [currentPage]="productsStore.page()"
-          [totalPages]="productsStore.totalPages()"
-          (pageChange)="onPageChange($event)"
-        />
+          <app-pagination
+            class="product-page__pagination"
+            [currentPage]="productsStore.page()"
+            [totalPages]="productsStore.totalPages()"
+            (pageChange)="onPageChange($event)"
+          />
+        } @placeholder {
+          <div class="product-page__grid">
+            @for (placeholder of skeletonPlaceholders(); track $index) {
+              <app-loading-skeleton />
+            }
+          </div>
+        }
       } @else if (search(); as term) {
         <app-empty-state
           title="No results for &quot;{{ term }}&quot;"

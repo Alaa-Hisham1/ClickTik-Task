@@ -182,12 +182,17 @@ The UI uses semantic HTML and accessible form controls, including:
 * `aria-current` for active navigation items
 * `role="status"` for loading and empty states
 * Visually hidden labels where needed
+## Performance
+
+The product grid uses Angular's `@defer` to defer non-critical UI until the initial page content is ready.
+
+A loading placeholder is provided through the `@placeholder` block so the layout remains stable while the deferred content is rendered.
 
 ## Project Notes
 
 The implementation focuses on the required functionality and the provided Figma design while keeping the application structure reusable and maintainable.
 
-The project also includes reusable components such as `Select`, `LoadingSkeleton`, and `EmptyState` that can be reused as the application grows.
+The project also includes reusable components such as `Select`, `LoadingSkeleton`, `EmptyState`, and deferred product content that can be reused as the application grows.
 
 ## Disclaimer
 
