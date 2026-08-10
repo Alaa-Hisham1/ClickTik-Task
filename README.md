@@ -30,16 +30,15 @@ src/app/
 ├── features/
 │   ├── auth/
 │   │   └── login/
-│   └── products/
-│       ├── product-page/
+│   ├── products/
+│   │   ├── product-page/
+│   │   ├── interfaces/
+│   │   ├── products.service.ts
+│   │   └── products.store.ts
+│   └── cart/
 │       ├── interfaces/
-│       ├── products.service.ts
-│       └── products.store.ts
-│
-├── cart/
-│   ├── interfaces/
-│   ├── cart.service.ts
-│   └── cart.store.ts
+│       ├── cart.service.ts
+│       └── cart.store.ts
 │
 ├── shared/
 │   ├── ui/
@@ -61,11 +60,16 @@ src/app/
     └── _globals.scss
 ```
 
-The application follows a feature-oriented structure.
+The application follows a feature-oriented structure. `cart` sits alongside `products` under
+`features/` — it's its own vertical (service + store + interfaces), not a top-level concern.
 
-Reusable components under `shared/ui` are kept presentational: they receive data through `input()` and communicate through `output()` without directly depending on services or `HttpClient`.
+Reusable components under `shared/ui` are kept presentational: they receive data through `input()`
+and communicate through `output()` without directly depending on services or `HttpClient`.
+Application state and API communication are handled by the corresponding feature stores and
+services.
 
-Application state and API communication are handled by the corresponding feature stores and services.
+Both routes (`login`, `products`) are lazy-loaded via `loadComponent`, and `products` is protected
+by a functional `CanActivateFn` guard.
 
 ## State Management
 
@@ -103,7 +107,7 @@ toObservable(searchQuery).pipe(
 
 `linkedSignal` is used for the search field because the value needs to follow the URL while remaining locally writable while the user types.
 
-The cart uses `concatMap` instead of `switchMap`. Since DummyJSON's cart endpoint does not persist cart state, the client maintains the accumulated cart lines and sends the current list when adding a product. Using `concatMap` keeps multiple additions in order.
+The cart uses `concatMap` instead of `switchMap`. Since DummyJSON's cart endpoint does not persist cart state, the client maintains the accumulated cart lines and processes multiple additions in order.
 
 The application also uses `takeUntilDestroyed()` for subscriptions, avoiding manual subscription cleanup.
 
@@ -111,9 +115,11 @@ The application also uses `takeUntilDestroyed()` for subscriptions, avoiding man
 
 DummyJSON's `/carts/add` endpoint returns a calculated cart response but does not persist the cart on the server.
 
-`CartStore` therefore keeps the current cart lines in memory and sends the complete list when a product is added.
+`CartStore` keeps the current cart lines in memory and uses an **optimistic update** when adding a product. The local cart state is updated immediately so the cart badge responds without waiting for the API request.
 
-The returned `totalQuantity` is used for the cart badge.
+The current cart is then sent to DummyJSON with the complete cart list. If the request fails, the previous cart state is restored.
+
+`concatMap` is used to keep multiple add-to-cart operations in order while maintaining the responsive optimistic UI.
 
 Only the number of products in the cart is displayed, as required by the task.
 
@@ -182,6 +188,7 @@ The UI uses semantic HTML and accessible form controls, including:
 * `aria-current` for active navigation items
 * `role="status"` for loading and empty states
 * Visually hidden labels where needed
+
 ## Performance
 
 The product grid uses Angular's `@defer` to defer non-critical UI until the initial page content is ready.
@@ -192,7 +199,7 @@ A loading placeholder is provided through the `@placeholder` block so the layout
 
 The implementation focuses on the required functionality and the provided Figma design while keeping the application structure reusable and maintainable.
 
-The project also includes reusable components such as `Select`, `LoadingSkeleton`, `EmptyState`, and deferred product content that can be reused as the application grows.
+The project also includes reusable components such as `Select`, `LoadingSkeleton`, and `EmptyState`.
 
 ## Disclaimer
 

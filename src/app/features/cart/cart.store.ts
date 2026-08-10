@@ -38,15 +38,33 @@ export const CartStore = signalStore(
           return EMPTY;
         }
 
-        const items = store.items();
-        const existing = items.find((item) => item.id === productId);
+        // Captured before the optimistic patch below overwrites them — this
+        // is exactly what a failure needs to roll back to. concatMap
+        // guarantees this is safe: the next queued addition can't start
+        // (and can't move `store.items()` further) until this one's whole
+        // inner observable — success, failure, and rollback included — has
+        // completed.
+        const previousItems = store.items();
+        const previousCount = store.count();
+
+        const existing = previousItems.find((item) => item.id === productId);
         const nextItems: CartProductLine[] = existing
-          ? items.map((item) =>
+          ? previousItems.map((item) =>
               item.id === productId ? { ...item, quantity: item.quantity + 1 } : item,
             )
-          : [...items, { id: productId, quantity: 1 }];
+          : [...previousItems, { id: productId, quantity: 1 }];
 
-        patchState(store, { status: 'loading', error: null });
+        // Optimistic: show the addition immediately, before the request
+        // even goes out, rather than waiting on the round-trip. The count
+        // is derived the same way the server's own `totalQuantity` is (a
+        // sum of line-item quantities), so it should already match what
+        // comes back on success.
+        patchState(store, {
+          items: nextItems,
+          count: nextItems.reduce((sum, item) => sum + item.quantity, 0),
+          status: 'loading',
+          error: null,
+        });
 
         return cartService.addToCart(userId, nextItems).pipe(
           tap((cart) => {
@@ -58,9 +76,14 @@ export const CartStore = signalStore(
             });
           }),
           catchError(() => {
-            // Not optimistic — items/count are only patched on a confirmed
-            // response above, so a failure here has nothing to roll back.
-            patchState(store, { status: 'error', error: 'Could not add to cart. Please try again.' });
+            // Roll back to exactly the pre-optimistic snapshot — not just a
+            // decrement — so a failure can never leave a phantom line behind.
+            patchState(store, {
+              items: previousItems,
+              count: previousCount,
+              status: 'error',
+              error: 'Could not add to cart. Please try again.',
+            });
             return EMPTY;
           }),
         );
