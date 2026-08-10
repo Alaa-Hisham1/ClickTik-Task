@@ -1,1 +1,63 @@
-<p>product-card works!</p>
+<article class="product-card">
+  <div class="product-card__media">
+    <img class="product-card__image" [src]="image()" [alt]="title()" loading="lazy" />
+    @if (badge()) {
+      <span class="product-card__badge">{{ badge() }}</span>
+    }
+  </div>
+
+  <div class="product-card__body">
+    <h3 class="product-card__title">{{ title() }}</h3>
+
+    @if (description()) {
+      <p class="product-card__description">{{ description() }}</p>
+    }
+
+    <div class="product-card__price-row">
+      @if (formattedOriginalPrice(); as original) {
+        <span class="product-card__price product-card__price--struck">
+          {{ original }}
+          <span class="product-card__currency">{{ currency() }}</span>
+        </span>
+      }
+      <span class="product-card__price">
+        {{ formattedPrice() }}
+        <span class="product-card__currency">{{ currency() }}</span>
+      </span>
+    </div>
+
+    <dl class="product-card__meta">
+      <div class="product-card__meta-row">
+        <dt>Brand:</dt>
+        <dd>{{ brand() }}</dd>
+      </div>
+      <div class="product-card__meta-row">
+        <dt>Category:</dt>
+        <dd>{{ category() }}</dd>
+      </div>
+      <div class="product-card__meta-row">
+        <dt>In Stock:</dt>
+        <dd>{{ inStock() ? 'Yes' : 'No' }}</dd>
+      </div>
+    </dl>
+
+    <div class="product-card__rating" [attr.aria-label]="ratingLabel()">
+      <svg
+        class="product-card__star"
+        aria-hidden="true"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10 1.5 12.472 7.36 18.8 7.91l-4.803 4.166L15.42 18.5 10 15.15 4.58 18.5l1.423-6.424L1.2 7.91l6.328-.55Z"
+        />
+      </svg>
+      <span class="product-card__rating-value" aria-hidden="true">{{ formattedRating() }}</span>
+      <span class="product-card__review-count" aria-hidden="true">({{ reviewCount() }})</span>
+    </div>
+
+    <app-button variant="cta" size="xl" [fullWidth]="true" (clicked)="addToCart.emit()">
+      Add to Cart
+    </app-button>
+  </div>
+</article>

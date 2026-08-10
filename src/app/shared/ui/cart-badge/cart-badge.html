@@ -1,1 +1,14 @@
-<p>cart-badge works!</p>
+<button type="button" class="cart-badge" [attr.aria-label]="label()" (click)="activated.emit()">
+  <svg class="cart-badge__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M6 8h12l-1.2 10.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"
+      stroke="currentColor"
+      stroke-width="1.6"
+      stroke-linejoin="round"
+    />
+    <path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+  </svg>
+  @if (count() > 0) {
+    <span class="cart-badge__count" aria-hidden="true">{{ count() }}</span>
+  }
+</button>

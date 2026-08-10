@@ -1,1 +1,36 @@
-<p>select works!</p>
+<div class="select-field">
+  <label class="select-field__label" [for]="id">{{ label() }}</label>
+  <div class="select-field__control">
+    <select
+      class="select-field__input"
+      [class.select-field__input--error]="!!error()"
+      [id]="id"
+      [disabled]="disabled()"
+      [required]="required()"
+      [attr.aria-invalid]="error() ? true : null"
+      [attr.aria-describedby]="error() ? errorId : null"
+      [value]="value()"
+      (change)="onChange($event)"
+    >
+      @if (placeholder(); as placeholderText) {
+        <option value="" disabled [selected]="!value()">{{ placeholderText }}</option>
+      }
+      @for (option of options(); track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+    <svg class="select-field__chevron" aria-hidden="true" viewBox="0 0 20 20">
+      <path
+        d="M5 7.5 10 12.5 15 7.5"
+        stroke="currentColor"
+        stroke-width="1.6"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </div>
+  @if (error()) {
+    <p class="select-field__error" [id]="errorId" role="alert">{{ error() }}</p>
+  }
+</div>

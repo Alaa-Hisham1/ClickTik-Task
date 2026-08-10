@@ -1,1 +1,14 @@
-<p>empty-state works!</p>
+<div class="empty-state">
+  <svg class="empty-state__icon" aria-hidden="true" viewBox="0 0 48 48" fill="none">
+    <rect x="8" y="18" width="32" height="20" rx="2" stroke="currentColor" stroke-width="1.6" />
+    <path d="M8 18 14 8h20l6 10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+    <path d="M18 24v4a6 6 0 0 0 12 0v-4" stroke="currentColor" stroke-width="1.6" />
+  </svg>
+  <p class="empty-state__title">{{ title() }}</p>
+  @if (description()) {
+    <p class="empty-state__description">{{ description() }}</p>
+  }
+  <div class="empty-state__action">
+    <ng-content />
+  </div>
+</div>

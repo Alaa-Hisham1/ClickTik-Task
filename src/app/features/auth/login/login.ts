@@ -36,6 +36,15 @@ export class Login {
 
   protected onSubmit(event: Event): void {
     event.preventDefault();
+
+    // Reads the signal directly rather than relying on the button's disabled
+    // attribute — that DOM update lags a render behind the signal write, so a
+    // fast enough repeat click could otherwise slip through and fire a second
+    // request before the button visually disables.
+    if (this.loading()) {
+      return;
+    }
+
     this.authStore.login({ username: this.username(), password: this.password() });
   }
 }
