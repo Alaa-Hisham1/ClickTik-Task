@@ -21,7 +21,7 @@ export class ProductCard {
 
   readonly brand = input('');
   readonly category = input('');
-  readonly inStock = input(true);
+  readonly stock = input(0);
 
   readonly rating = input(0);
   readonly reviewCount = input(0);

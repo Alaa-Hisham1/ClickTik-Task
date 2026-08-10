@@ -78,6 +78,13 @@ export class ProductPage {
     return product.price / (1 - product.discountPercentage / 100);
   }
 
+  protected discountBadge(product: Product): string | null {
+    if (product.discountPercentage <= 0) {
+      return null;
+    }
+    return `${product.discountPercentage.toFixed(2)}%`;
+  }
+
   protected onAddToCart(product: Product): void {
     this.cartStore.addToCart(product.id);
   }
