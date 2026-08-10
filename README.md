@@ -1,59 +1,194 @@
-# PlenyTechnicalTask
+# ClickTik — Product Explorer
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.20.
+An Angular 21 product explorer built with DummyJSON. Users can authenticate, browse a paginated product catalog, search and filter by category, and add products to a cart.
 
-## Development server
-
-To start a local development server, run:
+## Running it
 
 ```bash
-ng serve
+npm install
+npm start        # ng serve — http://localhost:4200
+npm test         # ng test
+npm run build    # production build
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+For testing the login, DummyJSON provides test users such as `emilys` / `emilyspass`.
 
-## Code scaffolding
+> Note: the login field is labeled "Email" to match the provided design, but DummyJSON authenticates using a username.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Architecture
 
-```bash
-ng generate component component-name
+```text
+src/app/
+├── core/
+│   └── auth/
+│       ├── AuthService
+│       ├── AuthStore
+│       ├── AuthStorage
+│       ├── auth-guard
+│       └── auth-interceptor
+│
+├── features/
+│   ├── auth/
+│   │   └── login/
+│   └── products/
+│       ├── product-page/
+│       ├── interfaces/
+│       ├── products.service.ts
+│       └── products.store.ts
+│
+├── cart/
+│   ├── interfaces/
+│   ├── cart.service.ts
+│   └── cart.store.ts
+│
+├── shared/
+│   ├── ui/
+│   │   ├── Button
+│   │   ├── TextField
+│   │   ├── Select
+│   │   ├── ProductCard
+│   │   ├── Pagination
+│   │   ├── CartBadge
+│   │   ├── LoadingSkeleton
+│   │   ├── EmptyState
+│   │   └── Logo
+│   └── layout/
+│       ├── Header
+│       └── Footer
+│
+└── styles/
+    ├── _tokens.scss
+    └── _globals.scss
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The application follows a feature-oriented structure.
 
-```bash
-ng generate --help
+Reusable components under `shared/ui` are kept presentational: they receive data through `input()` and communicate through `output()` without directly depending on services or `HttpClient`.
+
+Application state and API communication are handled by the corresponding feature stores and services.
+
+## State Management
+
+The application uses **NgRx Signal Store** for authentication, products, and cart state.
+
+The main reasons for using Signal Store are:
+
+* Signals provide simple reactive state for the UI.
+* `rxMethod` works well for state-driven API requests.
+* `patchState` keeps state updates centralized.
+* `withComputed` is used for derived values such as loading state, authentication state, and total pages.
+* Classic NgRx would add more ceremony than needed for the relatively small state requirements of this application.
+
+The stores are:
+
+* `AuthStore`
+* `ProductsStore`
+* `CartStore`
+
+## Signals and RxJS
+
+Signals are primarily used for application state, while RxJS is used for asynchronous streams and API operations.
+
+For product loading, `rxMethod` and `switchMap` are used so that when the page, category, or search query changes, an older request can be cancelled in favor of the latest one.
+
+Search input is debounced in the `Header` before updating the URL:
+
+```ts
+toObservable(searchQuery).pipe(
+  debounceTime(400),
+  distinctUntilChanged(),
+  takeUntilDestroyed()
+)
 ```
 
-## Building
+`linkedSignal` is used for the search field because the value needs to follow the URL while remaining locally writable while the user types.
 
-To build the project run:
+The cart uses `concatMap` instead of `switchMap`. Since DummyJSON's cart endpoint does not persist cart state, the client maintains the accumulated cart lines and sends the current list when adding a product. Using `concatMap` keeps multiple additions in order.
 
-```bash
-ng build
+The application also uses `takeUntilDestroyed()` for subscriptions, avoiding manual subscription cleanup.
+
+## Cart
+
+DummyJSON's `/carts/add` endpoint returns a calculated cart response but does not persist the cart on the server.
+
+`CartStore` therefore keeps the current cart lines in memory and sends the complete list when a product is added.
+
+The returned `totalQuantity` is used for the cart badge.
+
+Only the number of products in the cart is displayed, as required by the task.
+
+## API and Authentication
+
+The application uses:
+
+```ts
+provideHttpClient(withFetch())
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Authentication is handled through a functional HTTP interceptor.
 
-## Running unit tests
+* The access token is attached to authenticated requests.
+* Login and refresh requests are excluded from the authentication header.
+* A `401` response triggers a token refresh and retries the original request.
+* If refreshing fails, the session is cleared.
+* `authGuard` protects the products route.
+* The original URL is preserved through `returnUrl` so the user can return to the requested page after logging in.
+* `AuthStorage` is responsible for browser storage.
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## URL State
 
-```bash
-ng test
+Pagination, category, and search are stored in the URL query parameters.
+
+The router uses `withComponentInputBinding()` so these values can be consumed directly by the products page.
+
+For example:
+
+```text
+/products?category=laptops&page=2
 ```
 
-## Running end-to-end tests
+This makes product views shareable and keeps the state consistent when refreshing or navigating with the browser's back/forward buttons.
 
-For end-to-end (e2e) testing, run:
+The URL drives the product store, so pagination, category selection, and search do not require separate duplicated state.
 
-```bash
-ng e2e
-```
+## Design System
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+The styling uses shared design tokens in `styles/_tokens.scss` for:
 
-## Additional Resources
+* Colors
+* Spacing
+* Border radius
+* Typography
+* Elevation
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The primary teal color and other product-page colors are based on the provided Figma design.
+
+Avenir Next is specified for the pagination numbers in the design. Since it is not available as a free web font, Open Sans is used as the fallback.
+
+The provided cart and search assets are used from `public/images`, while other UI icons are implemented as inline SVGs using `currentColor`.
+
+Category filters use real radio buttons with the specified two-tone appearance. Product counts are loaded from DummyJSON using lightweight requests and displayed beside the category names.
+
+Category and search filters are mutually exclusive to match the API behavior and the provided design.
+
+## Accessibility
+
+The UI uses semantic HTML and accessible form controls, including:
+
+* `nav` for navigation
+* `fieldset` and `legend` for category filters
+* `dl` for product metadata
+* Visible focus states
+* `aria-current` for active navigation items
+* `role="status"` for loading and empty states
+* Visually hidden labels where needed
+
+## Project Notes
+
+The implementation focuses on the required functionality and the provided Figma design while keeping the application structure reusable and maintainable.
+
+The project also includes reusable components such as `Select`, `LoadingSkeleton`, and `EmptyState` that can be reused as the application grows.
+
+## Disclaimer
+
+This project was built as a technical assessment using DummyJSON, a public dummy API, and is intended for assessment purposes only.
