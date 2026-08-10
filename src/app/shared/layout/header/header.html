@@ -14,10 +14,7 @@
       @if (authStore.isAuthenticated()) {
         <form class="site-header__search" role="search" (submit)="onSearchSubmit($event)">
           <label class="sr-only" for="header-search">Search products</label>
-          <svg class="site-header__search-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none">
-            <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6" />
-            <path d="m17 17-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-          </svg>
+          <img class="site-header__search-icon" src="images/Shape.png" alt="" aria-hidden="true" width="17" height="17" />
           <input
             id="header-search"
             class="site-header__search-input"
@@ -27,6 +24,10 @@
             (input)="searchQuery.set($any($event.target).value)"
           />
         </form>
+        <app-cart-badge [count]="cartStore.count()" />
+        <app-button class="site-header__account" variant="tertiary-gray" size="lg" [fullWidth]="true">
+          Account
+        </app-button>
 
         <app-cart-badge [count]="cartStore.count()" />
       } @else {

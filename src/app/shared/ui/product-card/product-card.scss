@@ -4,7 +4,8 @@
   width: 100%;
   max-width: 282px;
   background: var(--color-white);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--color-border-subtle);
   overflow: hidden;
 }
 
@@ -122,6 +123,7 @@
 .product-card__rating {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--space-1);
 }
 

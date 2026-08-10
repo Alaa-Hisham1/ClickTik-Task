@@ -88,6 +88,11 @@
 .product-page__sidebar {
   flex: 0 0 282px;
   width: 282px;
+  box-sizing: border-box;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 0.5px solid var(--color-border-subtle);
+  background: var(--color-white);
 }
 
 .product-page__sidebar-title {

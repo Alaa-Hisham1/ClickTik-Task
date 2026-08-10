@@ -33,6 +33,11 @@
   --color-error-600: #d92d20;
   --color-rating: #f4b000;
 
+  // One-off panel stroke (Products board sidebar/card outlines) — spec is
+  // "0.5px solid #424242, opacity: 0.5", pre-mixed here rather than dimming
+  // the whole panel (which would fade its text too).
+  --color-border-subtle: color-mix(in srgb, #424242 50%, transparent);
+
   // ---- Typography ----
   // Inter: running/body text. Open Sans: headings and UI chrome (buttons, labels,
   // counts) — both loaded as real webfonts in index.html, not just named and
