@@ -27,3 +27,17 @@ a {
 button {
   font: inherit;
 }
+
+// Visible to assistive tech only — for labels a design calls for as
+// placeholder-only, which still need a real accessible name.
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

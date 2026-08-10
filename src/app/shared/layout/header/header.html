@@ -9,8 +9,30 @@
         <a class="site-header__nav-link" href="/">Home</a>
       </nav>
     </div>
+
     <div class="site-header__right">
-      <app-button variant="tertiary-gray" size="lg">Log In</app-button>
+      @if (authStore.isAuthenticated()) {
+        <form class="site-header__search" role="search" (submit)="onSearchSubmit($event)">
+          <label class="sr-only" for="header-search">Search products</label>
+          <svg class="site-header__search-icon" aria-hidden="true" viewBox="0 0 20 20" fill="none">
+            <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6" />
+            <path d="m17 17-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          <input
+            id="header-search"
+            class="site-header__search-input"
+            type="search"
+            placeholder="Search"
+            [value]="searchQuery()"
+            (input)="searchQuery.set($any($event.target).value)"
+          />
+        </form>
+
+        <!-- Count is a placeholder until the Cart feature/API is wired up. -->
+        <app-cart-badge [count]="0" />
+      } @else {
+        <app-button variant="tertiary-gray" size="lg">Log In</app-button>
+      }
     </div>
   </div>
 </header>

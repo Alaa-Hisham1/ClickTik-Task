@@ -48,6 +48,13 @@
   line-height: var(--line-height-md);
 }
 
+.btn--xl {
+  height: var(--space-12-5);
+  padding-inline: var(--space-4);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-tight);
+}
+
 // Variants
 .btn--primary {
   background: var(--color-primary-500);
@@ -78,6 +85,26 @@
 
   &:hover:not(:disabled) {
     background: var(--color-gray-50);
+  }
+}
+
+// Product card "ADD TO CART" style — dark text on the brand teal, uppercase,
+// square-ish corners. Distinct enough from --primary (white text, radius-md)
+// that reusing --primary here would mean changing it for every other button.
+.btn--cta {
+  background: var(--color-primary-500);
+  color: var(--color-ink);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-600);
+  }
+
+  &:active:not(:disabled) {
+    background: var(--color-primary-700);
   }
 }
 

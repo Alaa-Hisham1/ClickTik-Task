@@ -1,0 +1,124 @@
+<div class="product-page">
+  <h1 class="sr-only">{{ selectedCategoryName() ?? 'All products' }}</h1>
+
+  <nav class="product-page__breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/products">Home</a></li>
+      @if (selectedCategoryName(); as name) {
+        <li><a href="/products">Products</a></li>
+        <li aria-current="page">{{ name }}</li>
+      } @else {
+        <li aria-current="page">Products</li>
+      }
+    </ol>
+  </nav>
+
+  <div class="product-page__layout">
+    <aside class="product-page__sidebar" aria-labelledby="category-filter-heading">
+      <h2 id="category-filter-heading" class="product-page__sidebar-title">Products</h2>
+      <div class="product-page__sidebar-divider" aria-hidden="true"></div>
+
+      <fieldset class="product-page__categories">
+        <legend class="sr-only">Filter by category</legend>
+
+        <label class="product-page__category">
+          <input
+            type="radio"
+            name="category"
+            class="product-page__category-input"
+            value="all"
+            [checked]="selectedCategory() === 'all'"
+            (change)="onCategoryChange('all')"
+          />
+          <span class="product-page__category-radio" aria-hidden="true">
+            <svg class="product-page__category-check" viewBox="0 0 10 8" fill="none">
+              <path
+                d="M1 4 3.5 6.5 9 1"
+                stroke="white"
+                stroke-width="1.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          <span class="product-page__category-label">All</span>
+        </label>
+
+        @for (cat of productsStore.categories(); track cat.slug) {
+          <label class="product-page__category">
+            <input
+              type="radio"
+              name="category"
+              class="product-page__category-input"
+              [value]="cat.slug"
+              [checked]="cat.slug === selectedCategory()"
+              (change)="onCategoryChange(cat.slug)"
+            />
+            <span class="product-page__category-radio" aria-hidden="true">
+              <svg class="product-page__category-check" viewBox="0 0 10 8" fill="none">
+                <path
+                  d="M1 4 3.5 6.5 9 1"
+                  stroke="white"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <span class="product-page__category-label">{{ cat.name }}</span>
+          </label>
+        }
+      </fieldset>
+    </aside>
+
+    <div class="product-page__results">
+      @if (productsStore.loading()) {
+        <p class="sr-only" role="status">Loading products…</p>
+        <div class="product-page__grid">
+          @for (placeholder of skeletonPlaceholders(); track $index) {
+            <app-loading-skeleton />
+          }
+        </div>
+      } @else if (productsStore.error(); as message) {
+        <app-empty-state title="Something went wrong" [description]="message">
+          <app-button variant="secondary" size="md" (clicked)="retry()">Try again</app-button>
+        </app-empty-state>
+      } @else if (productsStore.products().length > 0) {
+        <div class="product-page__grid">
+          @for (product of productsStore.products(); track product.id) {
+            <app-product-card
+              [image]="product.thumbnail"
+              [title]="product.title"
+              [description]="product.description"
+              badge="New"
+              [price]="product.price"
+              [originalPrice]="originalPrice(product)"
+              [brand]="product.brand ?? ''"
+              [category]="product.category"
+              [inStock]="product.stock > 0"
+              [rating]="product.rating"
+              [reviewCount]="product.reviews.length"
+              (addToCart)="onAddToCart(product)"
+            />
+          }
+        </div>
+
+        <app-pagination
+          class="product-page__pagination"
+          [currentPage]="productsStore.page()"
+          [totalPages]="productsStore.totalPages()"
+          (pageChange)="onPageChange($event)"
+        />
+      } @else {
+        <app-empty-state
+          title="No products in this category yet"
+          description="Try a different category from the list on the left."
+        >
+          <app-button variant="secondary" size="md" (clicked)="onCategoryChange('all')">
+            View all products
+          </app-button>
+        </app-empty-state>
+      }
+    </div>
+  </div>
+</div>

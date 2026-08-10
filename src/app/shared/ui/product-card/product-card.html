@@ -27,10 +27,12 @@
     </div>
 
     <dl class="product-card__meta">
-      <div class="product-card__meta-row">
-        <dt>Brand:</dt>
-        <dd>{{ brand() }}</dd>
-      </div>
+      @if (brand()) {
+        <div class="product-card__meta-row">
+          <dt>Brand:</dt>
+          <dd>{{ brand() }}</dd>
+        </div>
+      }
       <div class="product-card__meta-row">
         <dt>Category:</dt>
         <dd>{{ category() }}</dd>
