@@ -2,7 +2,7 @@
   <div class="product-card__media">
     <img class="product-card__image" [src]="image()" [alt]="title()" loading="lazy" />
     @if (badge()) {
-      <span class="product-card__badge">{{ badge() }}</span>
+      <span class="product-card__badge">- {{ badge() }}</span>
     }
   </div>
 
