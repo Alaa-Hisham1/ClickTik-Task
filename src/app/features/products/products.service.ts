@@ -31,4 +31,10 @@ export class ProductsService {
   getCategories() {
     return this.http.get<ProductCategory[]>(`${environment.apiBaseUrl}/products/categories`);
   }
+
+  searchProducts(query: string, { limit, skip }: ProductsPage) {
+    return this.http.get<ProductListResponse>(`${environment.apiBaseUrl}/products/search`, {
+      params: new HttpParams().set('q', query).set('limit', limit).set('skip', skip),
+    });
+  }
 }

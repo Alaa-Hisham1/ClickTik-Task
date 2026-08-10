@@ -18,10 +18,11 @@ import { ProductsStore } from '../products.store';
 })
 export class ProductPage {
   // Bound straight from the URL by withComponentInputBinding() (see
-  // app.config.ts) — the URL is the only place page/category state lives,
-  // which is what makes this route shareable and refresh-safe.
+  // app.config.ts) — the URL is the only place page/category/search state
+  // lives, which is what makes this route shareable and refresh-safe.
   readonly page = input('1');
   readonly category = input<string | null>(null);
+  readonly search = input<string | null>(null);
 
   protected readonly productsStore = inject(ProductsStore);
   private readonly router = inject(Router);
@@ -30,6 +31,7 @@ export class ProductPage {
   private readonly query = computed(() => ({
     page: Number(this.page()) || 1,
     category: this.category(),
+    search: this.search(),
   }));
 
   protected readonly selectedCategory = computed(() => this.category() ?? 'all');
@@ -47,7 +49,8 @@ export class ProductPage {
 
   constructor() {
     // rxMethod fed a computed signal — it re-fetches by itself whenever the
-    // URL-derived page/category changes, no effect() needed to "watch" it.
+    // URL-derived page/category/search changes, no effect() needed to
+    // "watch" it.
     this.productsStore.load(this.query);
   }
 
@@ -56,7 +59,10 @@ export class ProductPage {
   }
 
   protected onCategoryChange(category: string): void {
-    this.navigate({ category: category === 'all' ? null : category, page: 1 });
+    // A category pick and a free-text search both drive the same request —
+    // DummyJSON has no endpoint that combines them, so picking one clears
+    // the other rather than leaving a stale, silently-ignored filter active.
+    this.navigate({ category: category === 'all' ? null : category, search: null, page: 1 });
   }
 
   protected retry(): void {

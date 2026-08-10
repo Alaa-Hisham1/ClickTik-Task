@@ -12,6 +12,7 @@ interface ProductsState {
   page: number;
   limit: number;
   category: string | null;
+  search: string | null;
   categories: ProductCategory[];
   status: 'idle' | 'loading' | 'error';
   error: string | null;
@@ -23,6 +24,7 @@ const initialState: ProductsState = {
   page: 1,
   limit: 9,
   category: null,
+  search: null,
   categories: [],
   status: 'idle',
   error: null,
@@ -31,6 +33,7 @@ const initialState: ProductsState = {
 export interface ProductsQuery {
   page: number;
   category: string | null;
+  search: string | null;
 }
 
 export const ProductsStore = signalStore(
@@ -41,20 +44,24 @@ export const ProductsStore = signalStore(
     loading: computed(() => status() === 'loading'),
   })),
   withMethods((store, productsService = inject(ProductsService)) => ({
-    // Fed a signal from the component (page + category from the URL) —
-    // switchMap means a fast page/category change cancels the stale
-    // in-flight request instead of racing it, and catchError sits on the
-    // inner per-request pipe so one failed page doesn't kill the method
-    // for the next query.
+    // Fed a signal from the component (page/category/search from the URL) —
+    // switchMap means a fast change (typing, clicking pages) cancels the
+    // stale in-flight request instead of racing it, and catchError sits on
+    // the inner per-request pipe so one failed query doesn't kill the
+    // method for the next one.
     load: rxMethod<ProductsQuery>(
       pipe(
         tap(() => patchState(store, { status: 'loading', error: null })),
-        switchMap(({ page, category }) => {
+        switchMap(({ page, category, search }) => {
           const limit = store.limit();
           const skip = (page - 1) * limit;
-          const request$ = category
-            ? productsService.getProductsByCategory(category, { limit, skip })
-            : productsService.getProducts({ limit, skip });
+          // DummyJSON has no endpoint that combines search + category —
+          // a free-text search takes priority over a category selection.
+          const request$ = search
+            ? productsService.searchProducts(search, { limit, skip })
+            : category
+              ? productsService.getProductsByCategory(category, { limit, skip })
+              : productsService.getProducts({ limit, skip });
 
           return request$.pipe(
             tap((response) => {
@@ -63,6 +70,7 @@ export const ProductsStore = signalStore(
                 total: response.total,
                 page,
                 category,
+                search,
                 status: 'idle',
                 error: null,
               });

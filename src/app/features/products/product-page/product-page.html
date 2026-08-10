@@ -4,7 +4,10 @@
   <nav class="product-page__breadcrumb" aria-label="Breadcrumb">
     <ol>
       <li><a href="/products">Home</a></li>
-      @if (selectedCategoryName(); as name) {
+      @if (search()) {
+        <li><a href="/products">Products</a></li>
+        <li aria-current="page">Search results</li>
+      } @else if (selectedCategoryName(); as name) {
         <li><a href="/products">Products</a></li>
         <li aria-current="page">{{ name }}</li>
       } @else {
@@ -109,6 +112,15 @@
           [totalPages]="productsStore.totalPages()"
           (pageChange)="onPageChange($event)"
         />
+      } @else if (search(); as term) {
+        <app-empty-state
+          title="No results for &quot;{{ term }}&quot;"
+          description="Try a different search term, or browse by category instead."
+        >
+          <app-button variant="secondary" size="md" (clicked)="onCategoryChange('all')">
+            View all products
+          </app-button>
+        </app-empty-state>
       } @else {
         <app-empty-state
           title="No products in this category yet"
