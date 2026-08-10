@@ -24,12 +24,12 @@
             (input)="searchQuery.set($any($event.target).value)"
           />
         </form>
+
         <app-cart-badge [count]="cartStore.count()" />
+
         <app-button class="site-header__account" variant="tertiary-gray" size="lg" [fullWidth]="true">
           Account
         </app-button>
-
-        <app-cart-badge [count]="cartStore.count()" />
       } @else {
         <app-button variant="tertiary-gray" size="lg">Log In</app-button>
       }

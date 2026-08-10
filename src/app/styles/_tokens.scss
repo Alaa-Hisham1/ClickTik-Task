@@ -38,6 +38,10 @@
   // the whole panel (which would fade its text too).
   --color-border-subtle: color-mix(in srgb, #424242 50%, transparent);
 
+  // Checked-radio fill (Products board category filter) — a one-off light
+  // lavender distinct from the gray/brand scales above.
+  --color-radio-checked-bg: #f9f5ff;
+
   // ---- Typography ----
   // Inter: running/body text. Open Sans: headings and UI chrome (buttons, labels,
   // counts) — both loaded as real webfonts in index.html, not just named and

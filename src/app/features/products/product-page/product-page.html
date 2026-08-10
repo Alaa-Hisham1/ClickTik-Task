@@ -37,18 +37,13 @@
             [checked]="selectedCategory() === 'all'"
             (change)="onCategoryChange('all')"
           />
-          <span class="product-page__category-radio" aria-hidden="true">
-            <svg class="product-page__category-check" viewBox="0 0 10 8" fill="none">
-              <path
-                d="M1 4 3.5 6.5 9 1"
-                stroke="white"
-                stroke-width="1.4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+          <span class="product-page__category-radio" aria-hidden="true"></span>
+          <span class="product-page__category-label">
+            All
+            @if (productsStore.categoryCounts()['all']; as count) {
+              <span class="product-page__category-count">({{ count }})</span>
+            }
           </span>
-          <span class="product-page__category-label">All</span>
         </label>
 
         @for (cat of productsStore.categories(); track cat.slug) {
@@ -61,24 +56,28 @@
               [checked]="cat.slug === selectedCategory()"
               (change)="onCategoryChange(cat.slug)"
             />
-            <span class="product-page__category-radio" aria-hidden="true">
-              <svg class="product-page__category-check" viewBox="0 0 10 8" fill="none">
-                <path
-                  d="M1 4 3.5 6.5 9 1"
-                  stroke="white"
-                  stroke-width="1.4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+            <span class="product-page__category-radio" aria-hidden="true"></span>
+            <span class="product-page__category-label">
+              {{ cat.name }}
+              @if (productsStore.categoryCounts()[cat.slug]; as count) {
+                <span class="product-page__category-count">({{ count }})</span>
+              }
             </span>
-            <span class="product-page__category-label">{{ cat.name }}</span>
           </label>
         }
       </fieldset>
     </aside>
 
     <div class="product-page__results">
+      @if (search() && !productsStore.loading()) {
+        <div class="product-page__results-toolbar">
+          <p class="product-page__results-count">({{ productsStore.total() }}) Products Found</p>
+          <p class="product-page__sort">
+            <span class="product-page__sort-label">Sort By:</span>
+            <span class="product-page__sort-value">Popularity</span>
+          </p>
+        </div>
+      }
       @if (productsStore.loading()) {
         <p class="sr-only" role="status">Loading products…</p>
         <div class="product-page__grid">

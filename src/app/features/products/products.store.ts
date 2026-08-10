@@ -1,7 +1,7 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { EMPTY, catchError, pipe, switchMap, tap } from 'rxjs';
+import { EMPTY, catchError, forkJoin, map, pipe, switchMap, tap } from 'rxjs';
 
 import { Product, ProductCategory } from './interfaces/product';
 import { ProductsService } from './products.service';
@@ -14,6 +14,7 @@ interface ProductsState {
   category: string | null;
   search: string | null;
   categories: ProductCategory[];
+  categoryCounts: Record<string, number>;
   status: 'idle' | 'loading' | 'error';
   error: string | null;
 }
@@ -26,6 +27,7 @@ const initialState: ProductsState = {
   category: null,
   search: null,
   categories: [],
+  categoryCounts: {},
   status: 'idle',
   error: null,
 };
@@ -89,7 +91,31 @@ export const ProductsStore = signalStore(
     ),
     loadCategories(): void {
       productsService.getCategories().subscribe({
-        next: (categories) => patchState(store, { categories }),
+        next: (categories) => {
+          patchState(store, { categories });
+
+          // The "(N)" next to each category name in the sidebar — DummyJSON's
+          // categories endpoint has no counts, but every product list response
+          // carries a `total` regardless of `limit`, so a limit-1 request per
+          // category is enough to read it without fetching real product data.
+          // Supplementary/decorative: left empty (no badges) rather than shown
+          // with an error state if any of this fails.
+          const counts$ = {
+            all: productsService.getProducts({ limit: 1, skip: 0 }).pipe(map((r) => r.total)),
+            ...Object.fromEntries(
+              categories.map((cat) => [
+                cat.slug,
+                productsService
+                  .getProductsByCategory(cat.slug, { limit: 1, skip: 0 })
+                  .pipe(map((r) => r.total)),
+              ]),
+            ),
+          };
+          forkJoin(counts$).subscribe({
+            next: (categoryCounts) => patchState(store, { categoryCounts }),
+            error: () => {},
+          });
+        },
         error: () => patchState(store, { categories: [] }),
       });
     },

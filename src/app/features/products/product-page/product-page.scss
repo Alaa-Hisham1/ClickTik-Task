@@ -147,18 +147,23 @@
   border: 1px solid var(--color-primary-500);
   background: var(--color-white);
   transition: background-color 0.15s ease;
-}
 
-.product-page__category-check {
-  width: 8px;
-  height: 6px;
-  opacity: 0;
+  // Inner filled dot — a real two-tone radio button, not a checkmark glyph.
+  &::after {
+    content: '';
+    position: absolute;
+    width: 5.25px;
+    height: 5.25px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary-500);
+    opacity: 0;
+  }
 }
 
 .product-page__category-input:checked + .product-page__category-radio {
-  background: var(--color-primary-500);
+  background: var(--color-radio-checked-bg);
 
-  .product-page__category-check {
+  &::after {
     opacity: 1;
   }
 }
@@ -176,11 +181,51 @@
   color: var(--color-ink);
 }
 
+.product-page__category-count {
+  margin-inline-start: var(--space-1);
+  color: var(--color-gray-500);
+}
+
 // ---- Results ----
 
 .product-page__results {
   flex: 1;
   min-width: 0;
+}
+
+.product-page__results-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.product-page__results-count {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
+  color: var(--color-ink);
+}
+
+.product-page__sort {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
+  color: var(--color-ink);
+}
+
+.product-page__sort-label {
+  font-weight: var(--font-weight-semibold);
+}
+
+.product-page__sort-value {
+  font-weight: var(--font-weight-regular);
 }
 
 .product-page__grid {
